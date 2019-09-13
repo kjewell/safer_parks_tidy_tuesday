@@ -39,10 +39,12 @@ sum(trampoline_PA_2016$broken)
 ```{r plot}
 ggplot(trampoline_PA_2016, aes(month)) + 
   geom_bar(aes(fill = broken)) +
-  ggtitle(label = "Trampoline Park Injuries in Pennsylvania in 2016 ",
+  ggtitle(label = "Trampoline Park Injuries by Month in Pennsylvania in 2016 ",
           subtitle = "Thems the Breaks") +
   labs(caption = "Source: data.world & Safer Parks, h/t  tidytuesday") +
   scale_x_continuous(breaks = (1:12)) +
   theme_hc()+ 
-  scale_fill_brewer(palette="Set2", name  ="Injury includes Fracture:")
+  scale_fill_brewer(palette="Set2", name  ="Injury includes Fracture:") +
+      theme(plot.subtitle = element_text(face = "italic"))
+
 ```
