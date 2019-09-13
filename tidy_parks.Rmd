@@ -1,0 +1,48 @@
+---
+title: "Tidy Tuesday: Pennsylvania Trampoline Park Injuries in Safer Parks Dataset"
+author: "KGJ"
+date: "9/13/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+list_of_packages <- c("janitor", "tidyverse", "lubridate", "ggthemes", "RColorBrewer")
+lapply(list_of_packages, library, character.only = TRUE)
+```
+
+## Quick look at Trampoline Park Injuries in PA
+
+```{r get_and_clean_data}
+saferparks <- read_csv("saferparks.csv")
+```
+
+
+```{r wrangle }
+
+saferparks$date_from_text <- saferparks$acc_date %>%
+  as_date(format = "%m/%d/%Y",tz = "UTC")
+
+saferparks$year <- year(saferparks$date_from_text)
+saferparks$month <- month(saferparks$date_from_text)
+saferparks$broken <- grepl("broken|Fractured", saferparks$injury_desc, ignore.case = TRUE)
+
+trampoline <- saferparks[grep("Trampoline", saferparks$device_category, ignore.case = TRUE),]
+trampoline_PA <- trampoline[grep("PA", trampoline$acc_state, ignore.case = TRUE),]
+trampoline_PA_2016 <- trampoline_PA[trampoline_PA$year == 2016,]
+
+sum(trampoline_PA_2016$broken)
+
+```
+
+
+```{r plot}
+ggplot(trampoline_PA_2016, aes(month)) + 
+  geom_bar(aes(fill = broken)) +
+  ggtitle(label = "Trampoline Park Injuries in Pennsylvania in 2016 ",
+          subtitle = "Thems the Breaks") +
+  labs(caption = "Source: data.world & Safer Parks, h/t  tidytuesday") +
+  scale_x_continuous(breaks = (1:12)) +
+  theme_hc()+ 
+  scale_fill_brewer(palette="Set2", name  ="Injury includes Fracture:")
+```
